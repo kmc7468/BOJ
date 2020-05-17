@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-int GetDigit(const std::string& string, int digit, bool isNegative = false);
+int GetDigit(const std::string& string, int digit);
 void SetDigit(std::string& string, int digit, int number);
 bool IsBigger(const std::string& a, const std::string& b);
 
@@ -41,9 +41,8 @@ int main() {
 	std::cout << (start == std::string::npos ? "0" : result.substr(start));
 }
 
-int GetDigit(const std::string& string, int digit, bool isNegative) {
-	const int number = digit < string.size() ? string[string.size() - digit - 1] - '0' : 0;
-	return isNegative ? -number : number;
+int GetDigit(const std::string& string, int digit) {
+	return digit < string.size() ? string[string.size() - digit - 1] - '0' : 0;
 }
 void SetDigit(std::string& string, int digit, int number) {
 	string[string.size() - digit - 1] = number + '0';
