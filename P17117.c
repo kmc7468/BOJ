@@ -1,0 +1,1 @@
+main(r){scanf("%d",&r);printf("%d",21076*(r<13));}
