@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <ios>
 #include <iostream>
 #include <string>
 #include <utility>
@@ -39,6 +40,9 @@ void RemoveNestedParens(Node* node);
 void RemoveParens(Node* node, Node* parent, std::size_t& index);
 
 int main() {
+	std::ios::sync_with_stdio(false);
+	std::cin.tie(nullptr);
+
 	std::string expression;
 	std::cin >> expression;
 
