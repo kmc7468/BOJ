@@ -51,9 +51,8 @@ int Remainder(int a, int b);
 
 std::size_t FindBase(const std::vector<std::string>& lines, std::size_t begin, std::size_t end, std::size_t index);
 void Parse(const std::vector<std::string>& lines, std::size_t top, std::size_t bottom, std::size_t base,
-	std::deque<Node*>& deque, std::size_t& i, std::size_t end, Node* node, Rank rank = RANK_NONE);
-Node* ParsePow(Node* orgNode, const std::vector<std::string>& lines, std::size_t top, std::size_t bottom, std::size_t base,
-	std::size_t& i, std::size_t end, Node* node);
+	std::deque<Node*>& deque, std::size_t& i, Node* node, Rank rank = RANK_NONE);
+Node* ParsePow(Node* orgNode, const std::vector<std::string>& lines, std::size_t top, std::size_t base, std::size_t& i);
 void PushOperand(std::deque<Node*>& deque, bool& requiredRhs, Node* node);
 
 int main() {
@@ -75,7 +74,7 @@ int main() {
 
 		std::deque<Node*> deque;
 		std::size_t i = 0;
-		Parse(lines, 0, n, FindBase(lines, 0, n, 0), deque, i, lines.front().size(), tree.Left);
+		Parse(lines, 0, n, FindBase(lines, 0, n, 0), deque, i, tree.Left);
 
 		std::cout << tree.Eval() << '\n';
 	}
@@ -149,12 +148,12 @@ std::size_t FindBase(const std::vector<std::string>& lines, std::size_t begin, s
 	return static_cast<std::size_t>(-1);
 }
 void Parse(const std::vector<std::string>& lines, std::size_t top, std::size_t bottom, std::size_t base,
-	std::deque<Node*>& deque, std::size_t& i, std::size_t end, Node* node, Rank rank) {
+	std::deque<Node*>& deque, std::size_t& i, Node* node, Rank rank) {
 	const std::string& line = lines[base];
 	bool requiredRhs = false;
 
 	char prev = 0;
-	for (; i < end; ++i) {
+	for (; i < line.size(); ++i) {
 		const char c = line[i];
 		if (c == '.') {
 			if (i && prev == '.') {
@@ -166,7 +165,7 @@ void Parse(const std::vector<std::string>& lines, std::size_t top, std::size_t b
 			}
 		} else if (std::isdigit(c)) {
 			Node* const digitNode = new Node(NODE_DIGIT, c - '0');
-			Node* const resultNode = ParsePow(digitNode, lines, top, bottom, base, ++i, end, node);
+			Node* const resultNode = ParsePow(digitNode, lines, top, base, ++i);
 			PushOperand(deque, requiredRhs, resultNode);
 		} else if (c == '+') {
 			if (rank >= RANK_MUL) {
@@ -180,7 +179,7 @@ void Parse(const std::vector<std::string>& lines, std::size_t top, std::size_t b
 				Node* const divNode = new Node(NODE_DIV, nullptr);
 
 				std::size_t lastMinus = i + 2;
-				while (lastMinus < end && line[lastMinus] == '-') {
+				while (lastMinus < line.size() && line[lastMinus] == '-') {
 					++lastMinus;
 				}
 
@@ -193,11 +192,11 @@ void Parse(const std::vector<std::string>& lines, std::size_t top, std::size_t b
 				}
 
 				std::deque<Node*> newDeque;
-				Parse(lines, top, base, FindBase(lines, top, base, topBegin), newDeque, i = topBegin, lastMinus, divNode->Left = new Node());
-				Parse(lines, base + 1, bottom, FindBase(lines, base + 1, bottom, bottomBegin), newDeque, i = bottomBegin, lastMinus, divNode->Right = new Node());
+				Parse(lines, top, base, FindBase(lines, top, base, topBegin), newDeque, i = topBegin, divNode->Left = new Node());
+				Parse(lines, base + 1, bottom, FindBase(lines, base + 1, bottom, bottomBegin), newDeque, i = bottomBegin, divNode->Right = new Node());
 				i = lastMinus;
 
-				Node* const resultNode = ParsePow(divNode, lines, top, bottom, base, i, end, node);
+				Node* const resultNode = ParsePow(divNode, lines, top, base, i);
 				PushOperand(deque, requiredRhs, resultNode);
 			} else if (requiredRhs || deque.empty()) {
 				Node* const negNode = new Node(NODE_NEG, nullptr);
@@ -218,10 +217,10 @@ void Parse(const std::vector<std::string>& lines, std::size_t top, std::size_t b
 				const NodeType type = deque.back()->Type;
 				if (type == NODE_ADD || type == NODE_SUB) {
 					deque.push_back(deque.back()->Right);
-					Parse(lines, top, bottom, base, deque, i, end, deque[deque.size() - 2]->Right = new Node(), RANK_MUL);
+					Parse(lines, top, bottom, base, deque, i, deque[deque.size() - 2]->Right = new Node(), RANK_MUL);
 				} else {
 					Node* const mulNode = new Node();
-					Parse(lines, top, bottom, base, deque, i, end, mulNode, RANK_MUL);
+					Parse(lines, top, bottom, base, deque, i, mulNode, RANK_MUL);
 					deque.push_back(mulNode);
 				}
 			} else {
@@ -231,8 +230,8 @@ void Parse(const std::vector<std::string>& lines, std::size_t top, std::size_t b
 		} else if (c == '(') {
 			Node* const parenNode = new Node(NODE_PAREN, new Node());
 			std::deque<Node*> newDeque;
-			Parse(lines, top, bottom, base, newDeque, i += 2, end, parenNode->Left);
-			Node* const resultNode = ParsePow(parenNode, lines, top, bottom, base, i, end, node);
+			Parse(lines, top, bottom, base, newDeque, i += 2, parenNode->Left);
+			Node* const resultNode = ParsePow(parenNode, lines, top, base, i);
 			PushOperand(deque, requiredRhs, resultNode);
 		} else if (c == ')') {
 			if (rank == RANK_MUL) {
@@ -252,13 +251,12 @@ void Parse(const std::vector<std::string>& lines, std::size_t top, std::size_t b
 	delete deque.back();
 	deque.pop_back();
 }
-Node* ParsePow(Node* orgNode, const std::vector<std::string>& lines, std::size_t top, std::size_t bottom, std::size_t base,
-	std::size_t& i, std::size_t end, Node* node) {
+Node* ParsePow(Node* orgNode, const std::vector<std::string>& lines, std::size_t top, std::size_t base, std::size_t& i) {
 	const std::size_t powStart = FindBase(lines, top, base, i);
 	if (powStart != -1) {
 		Node* const powNode = new Node(NODE_POW, orgNode);
 		std::deque<Node*> deque;
-		Parse(lines, top, base, powStart, deque, i, end, powNode->Right = new Node());
+		Parse(lines, top, base, powStart, deque, i, powNode->Right = new Node());
 		return powNode;
 	} else return orgNode;
 }
