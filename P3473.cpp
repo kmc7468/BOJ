@@ -34,7 +34,6 @@ bool MulDiv(const std::string& string, std::size_t& index, Node* node);
 bool Paren(const std::string& string, std::size_t& index, Node* node);
 bool Char(const std::string& string, std::size_t& index, Node* node);
 
-char GetNegativeConnecter(char c);
 bool IsNegativeConnecter(char c);
 void RemoveNestedParens(Node* node);
 void RemoveParens(Node* node, Node* parent, std::size_t& index);
@@ -166,13 +165,6 @@ bool Char(const std::string& string, std::size_t& index, Node* node) {
 	} else return false;
 }
 
-char GetNegativeConnecter(char c) {
-	if (c == '+') return '-';
-	else if (c == '-') return '+';
-	else if (c == '*') return '/';
-	else if (c == '/') return '*';
-	else return 0;
-}
 bool IsNegativeConnecter(char c) {
 	return c == '-' || c == '/';
 }
