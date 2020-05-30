@@ -1,0 +1,1 @@
+s[12];main(n,p,c,m){scanf("%d",&n);while(n--){for(m=scanf("%d",&p);p--;)scanf("%d%s",&c,s+21),c>m?m=c,strcpy(s,s+21):0;puts(s);}}
