@@ -1,0 +1,2 @@
+#define I(x)(int)x==x
+main(a,b,c){scanf("%d%d%d",&a,&b,&c);double d=b*b-4*a*c;if(d>0){double s=sqrt(d),v=2*a,n=(-b+s)/v,m=(-b-s)/v;if(I(n)&&I(m)){if(n>0&&m>0&&(int)n%2==0&&(int)m%2==0)puts("이수근");else puts("정수근");exit(0);}}puts("둘다틀렸근");}
