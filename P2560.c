@@ -1,1 +1,1 @@
-p[1000001],i,t=1000;main(a,b,d,n){scanf("%d%d%d%d",&a,&b,&d,&n);for(;i<=n;++i)p[i]=(i<a?1:p[i-1]+p[i-a]-(i<b?0:p[i-b]+(i==d))+t)%t;printf("%d",p[n]);}
+p[1000001],i;main(a,b,d,n){scanf("%d%d%d%d",&a,&b,&d,&n);for(;i<=n;++i)p[i]=(i<a?1:p[i-1]+p[i-a]-(i<b?0:p[i-b]+(i==d))+1000)%1000;printf("%d",p[n]);}
