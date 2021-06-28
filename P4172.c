@@ -1,0 +1,1 @@
+a[1000000];f(int i){return(a[i]?a[i]:(a[i]=(f(i-sqrt(i))+f(log(i))+f(i*sin(i)*sin(i)))%1000000+1))-1;}main(i){while(*a=scanf("%d",&i)+1,i+1)printf("%d ",f(i));}
