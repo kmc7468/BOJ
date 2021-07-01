@@ -95,14 +95,5 @@ double Interval::GetMean() const {
 }
 
 double GetAngle(int x, int y) {
-	const double angle = std::atan(std::abs(static_cast<double>(y) / x));
-	const double coAngle = PI / 2 - angle;
-	if (x > 0 && y > 0)			return angle;					// 1사
-	else if (x < 0 && y > 0)	return coAngle + PI / 2;		// 2사
-	else if (x < 0 && y < 0)	return angle + PI;				// 3사
-	else if (x > 0 && y < 0)	return coAngle + PI / 2 * 3;	// 4사
-	else if (y == 0 && x > 0)	return 0;						// +x
-	else if (x == 0 && y > 0)	return PI / 2;					// +y
-	else if (y == 0 && x < 0)	return PI;						// -x
-	else						return PI / 2 * 3;				// -y
+	return std::fmod(std::atan2(y, x) + 2 * PI, 2 * PI);
 }
